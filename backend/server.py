@@ -227,7 +227,7 @@ async def get_projects():
 @api_router.get("/projects/{project_id}", response_model=Dict)
 async def get_project(project_id: str):
     try:
-        project = await db.projects.find_one({"id": project_id})
+        project = await db.projects.find_one({"id": project_id}, {"_id": 0})
         if not project:
             raise HTTPException(status_code=404, detail="Project not found")
         
