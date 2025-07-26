@@ -366,7 +366,7 @@ async def delete_project(project_id: str, current_user: dict = Depends(get_curre
 
 # Cost Items
 @api_router.post("/projects/{project_id}/costs")
-async def add_cost_item(project_id: str, cost_data: CostItemCreate):
+async def add_cost_item(project_id: str, cost_data: CostItemCreate, current_user: dict = Depends(get_current_user)):
     try:
         cost_dict = cost_data.dict()
         cost_dict['total_cost'] = cost_dict['quantity'] * cost_dict['unit_cost']
