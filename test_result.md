@@ -104,21 +104,69 @@
 
 user_problem_statement: "Build me an exe app that manage my cost and revenue for each project i work as a joiner - WITH CERTIFICATE-BASED AUTHENTICATION where clients cannot register without certificates provided by admin"
 
-backend:
-  - task: "Project Management API"
+  - task: "Certificate Authentication System"
     implemented: true
-    working: true
-    file: "/app/backend/server.py" 
+    working: "NA"
+    file: "/app/backend/auth.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Implemented comprehensive FastAPI backend with project CRUD, cost tracking, payment recording, and dashboard statistics. Includes all joinery-specific models and endpoints."
+        comment: "Implemented RSA-based certificate system with admin generation, client validation, and secure authentication. No self-registration allowed."
+
+  - task: "Admin Certificate Management"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/AdminPanel.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Created admin panel for generating, listing, and revoking client certificates. Requires admin secret for access."
+
+  - task: "Client Login System"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/LoginPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Built secure login page requiring certificate paste. No registration option available to clients."
+
+  - task: "Protected Routes Integration"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/AuthContext.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Integrated certificate-based auth into all project management routes. Auto-logout on 401 errors."
+
+backend:
+  - task: "Project Management API - WITH AUTH"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py" 
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
       - working: true
         agent: "testing"
-        comment: "✅ FULLY FUNCTIONAL - All CRUD operations working perfectly. Tested create, read, update, delete operations for projects. Fixed date serialization issues for MongoDB compatibility. All endpoints responding correctly with proper data validation and error handling."
+        comment: "✅ FULLY FUNCTIONAL - All CRUD operations working perfectly. Created, read, updated, and deleted joinery projects successfully. Fixed date serialization issues for MongoDB compatibility."
+      - working: "NA"
+        agent: "main"
+        comment: "Updated all project endpoints to require certificate authentication. Only authenticated clients can access project data."
 
   - task: "Dashboard Statistics API"
     implemented: true
