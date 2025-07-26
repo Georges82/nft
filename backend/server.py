@@ -444,7 +444,7 @@ async def add_payment(project_id: str, payment_data: PaymentCreate, current_user
         raise HTTPException(status_code=500, detail="Error adding payment")
 
 @api_router.delete("/projects/{project_id}/payments/{payment_id}")
-async def delete_payment(project_id: str, payment_id: str):
+async def delete_payment(project_id: str, payment_id: str, current_user: dict = Depends(get_current_user)):
     try:
         result = await db.projects.update_one(
             {"id": project_id},
