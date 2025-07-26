@@ -121,15 +121,18 @@ user_problem_statement: "Build me an exe app that manage my cost and revenue for
 
   - task: "Admin Certificate Management"
     implemented: true
-    working: "NA"
-    file: "/app/frontend/src/AdminPanel.js"
+    working: true
+    file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Created admin panel for generating, listing, and revoking client certificates. Requires admin secret for access."
+      - working: true
+        agent: "testing"
+        comment: "✅ FULLY FUNCTIONAL - Admin certificate management endpoints working perfectly. POST /api/admin/generate-certificate successfully generates certificates for clients with proper RSA signing. GET /api/admin/certificates correctly lists all certificates with proper sorting. POST /api/admin/revoke-certificate successfully revokes certificates and updates database. Admin secret authentication (joinery_admin_2024_secret_key) working correctly. All admin endpoints properly protected from unauthorized access."
 
   - task: "Client Login System"
     implemented: true
