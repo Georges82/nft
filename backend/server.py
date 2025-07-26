@@ -352,7 +352,7 @@ async def update_project(project_id: str, project_data: ProjectUpdate, current_u
         raise HTTPException(status_code=500, detail="Error updating project")
 
 @api_router.delete("/projects/{project_id}")
-async def delete_project(project_id: str):
+async def delete_project(project_id: str, current_user: dict = Depends(get_current_user)):
     try:
         result = await db.projects.delete_one({"id": project_id})
         if result.deleted_count == 0:
