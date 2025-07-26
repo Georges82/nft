@@ -128,6 +128,21 @@ class PaymentCreate(BaseModel):
     description: Optional[str] = None
     invoice_number: Optional[str] = None
 
+class CertificateCreate(BaseModel):
+    client_name: str
+    client_email: str
+    expires_days: int = 365
+
+class CertificateResponse(BaseModel):
+    certificate_id: str
+    client_name: str
+    client_email: str
+    certificate: str
+    expires_at: str
+
+class LoginRequest(BaseModel):
+    certificate: str
+
 class DashboardStats(BaseModel):
     total_projects: int
     active_projects: int
