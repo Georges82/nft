@@ -334,9 +334,15 @@ async def add_payment(project_id: str, payment_data: PaymentCreate):
         
         payment = PaymentRecord(**payment_dict)
         
+        # Also convert dates in the payment dict for MongoDB
+        payment_dict_for_db = payment.dict()
+        for key, value in payment_dict_for_db.items():
+            if isinstance(value, date) and not isinstance(value, datetime):
+                payment_dict_for_db[key] = value.isoformat()
+        
         result = await db.projects.update_one(
             {"id": project_id},
-            {"$push": {"payments": payment.dict()}, "$set": {"updated_at": datetime.utcnow()}}
+            {"$push": {"payments": payment_dict_for_db}, "$set": {"updated_at": datetime.utcnow()}}
         )
         
         if result.matched_count == 0:
