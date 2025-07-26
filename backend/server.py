@@ -325,7 +325,14 @@ async def delete_cost_item(project_id: str, cost_id: str):
 @api_router.post("/projects/{project_id}/payments")
 async def add_payment(project_id: str, payment_data: PaymentCreate):
     try:
-        payment = PaymentRecord(**payment_data.dict())
+        payment_dict = payment_data.dict()
+        
+        # Convert date objects to strings for MongoDB storage
+        for key, value in payment_dict.items():
+            if isinstance(value, date) and not isinstance(value, datetime):
+                payment_dict[key] = value.isoformat()
+        
+        payment = PaymentRecord(**payment_dict)
         
         result = await db.projects.update_one(
             {"id": project_id},
