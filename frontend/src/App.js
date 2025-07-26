@@ -1,12 +1,36 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import axios from "axios";
+import { BrowserRouter, Routes, Route, useLocation, Link } from "react-router-dom";
+import { AuthProvider, useAuth } from './AuthContext';
+import LoginPage from './LoginPage';
+import AdminPanel from './AdminPanel';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Protected Route wrapper
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated()) {
+    return <LoginPage />;
+  }
+  
+  return children;
+};
+
 // Main Dashboard Component
 const Dashboard = () => {
+  const { user, logout } = useAuth();
   const [stats, setStats] = useState({
     total_projects: 0,
     active_projects: 0,
@@ -35,6 +59,9 @@ const Dashboard = () => {
       setProjects(projectsResponse.data);
     } catch (error) {
       console.error('Error loading dashboard:', error);
+      if (error.response?.status === 401) {
+        logout();
+      }
     } finally {
       setLoading(false);
     }
@@ -89,17 +116,50 @@ const Dashboard = () => {
               </div>
               <div className="ml-4">
                 <h1 className="text-2xl font-bold text-gray-900">Joinery Project Manager</h1>
-                <p className="text-sm text-gray-600">Manage your woodworking projects and finances</p>
+                <p className="text-sm text-gray-600">Welcome, {user?.client_name}</p>
               </div>
             </div>
-            <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
-              New Project
-            </button>
+            <div className="flex items-center space-x-4">
+              <Link
+                to="/admin"
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium transition-colors text-sm"
+              >
+                Admin Panel
+              </Link>
+              <button 
+                onClick={logout}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+              >
+                Logout
+              </button>
+              <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
+                New Project
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* User Info Banner */}
+        <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-indigo-700">
+                <strong>Authenticated as:</strong> {user?.client_name} ({user?.client_email})
+              </p>
+              <p className="text-xs text-indigo-600">
+                Certificate ID: {user?.certificate_id}
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
           <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -306,10 +366,27 @@ const Dashboard = () => {
   );
 };
 
+function AppRouter() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
+
 function App() {
   return (
     <div className="App">
-      <Dashboard />
+      <AppRouter />
     </div>
   );
 }
