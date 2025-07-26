@@ -210,13 +210,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Project Management API"
-    - "Dashboard Statistics API" 
-    - "Cost Item Management"
-    - "Payment Recording System"
     - "Dashboard UI"
+    - "Project List Display" 
+    - "Responsive Design"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
