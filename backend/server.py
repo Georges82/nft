@@ -259,7 +259,7 @@ async def update_project(project_id: str, project_data: ProjectUpdate):
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Project not found")
         
-        updated_project = await db.projects.find_one({"id": project_id})
+        updated_project = await db.projects.find_one({"id": project_id}, {"_id": 0})
         totals = calculate_project_totals(updated_project)
         updated_project.update(totals)
         return updated_project
