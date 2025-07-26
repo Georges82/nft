@@ -246,6 +246,11 @@ async def update_project(project_id: str, project_data: ProjectUpdate):
         update_dict = {k: v for k, v in project_data.dict().items() if v is not None}
         update_dict['updated_at'] = datetime.utcnow()
         
+        # Convert date objects to strings for MongoDB storage
+        for key, value in update_dict.items():
+            if isinstance(value, date) and not isinstance(value, datetime):
+                update_dict[key] = value.isoformat()
+        
         result = await db.projects.update_one(
             {"id": project_id}, 
             {"$set": update_dict}
