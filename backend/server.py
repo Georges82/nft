@@ -274,7 +274,7 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
 
 # Projects
 @api_router.post("/projects", response_model=Project)
-async def create_project(project_data: ProjectCreate):
+async def create_project(project_data: ProjectCreate, current_user: dict = Depends(get_current_user)):
     try:
         project_dict = project_data.dict()
         project = Project(**project_dict)
