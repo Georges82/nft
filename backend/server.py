@@ -290,9 +290,15 @@ async def add_cost_item(project_id: str, cost_data: CostItemCreate):
         cost_dict['total_cost'] = cost_dict['quantity'] * cost_dict['unit_cost']
         cost_item = CostItem(**cost_dict)
         
+        # Convert any date objects to strings for MongoDB storage
+        cost_dict_for_db = cost_item.dict()
+        for key, value in cost_dict_for_db.items():
+            if isinstance(value, date) and not isinstance(value, datetime):
+                cost_dict_for_db[key] = value.isoformat()
+        
         result = await db.projects.update_one(
             {"id": project_id},
-            {"$push": {"costs": cost_item.dict()}, "$set": {"updated_at": datetime.utcnow()}}
+            {"$push": {"costs": cost_dict_for_db}, "$set": {"updated_at": datetime.utcnow()}}
         )
         
         if result.matched_count == 0:
