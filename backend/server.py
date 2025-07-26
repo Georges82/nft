@@ -170,6 +170,72 @@ def calculate_project_totals(project_dict):
 async def root():
     return {"message": "Joinery Project Management API"}
 
+# Authentication routes
+@api_router.post("/admin/generate-certificate", response_model=CertificateResponse)
+async def generate_client_certificate(
+    cert_data: CertificateCreate, 
+    admin_user: dict = Depends(get_admin_user)
+):
+    """Admin-only endpoint to generate client certificates"""
+    try:
+        result = await cert_manager.generate_client_certificate(
+            client_name=cert_data.client_name,
+            client_email=cert_data.client_email, 
+            expires_days=cert_data.expires_days
+        )
+        return CertificateResponse(**result)
+    except Exception as e:
+        logger.error(f"Error generating certificate: {e}")
+        raise HTTPException(status_code=500, detail="Error generating certificate")
+
+@api_router.post("/admin/revoke-certificate")
+async def revoke_certificate(
+    certificate_id: str,
+    admin_user: dict = Depends(get_admin_user)
+):
+    """Admin-only endpoint to revoke client certificates"""
+    return await cert_manager.revoke_certificate(certificate_id)
+
+@api_router.get("/admin/certificates")
+async def list_certificates(admin_user: dict = Depends(get_admin_user)):
+    """Admin-only endpoint to list all certificates"""
+    try:
+        certificates = await db.certificates.find({}, {"_id": 0}).sort("issued_at", -1).to_list(100)
+        return {"certificates": certificates}
+    except Exception as e:
+        logger.error(f"Error listing certificates: {e}")
+        raise HTTPException(status_code=500, detail="Error listing certificates")
+
+@api_router.post("/auth/login")
+async def login_with_certificate(login_request: LoginRequest):
+    """Authenticate user with certificate"""
+    try:
+        user_data = await cert_manager.validate_certificate(login_request.certificate)
+        return {
+            "message": "Authentication successful",
+            "user": {
+                "client_name": user_data["client_name"],
+                "client_email": user_data["client_email"],
+                "certificate_id": user_data["certificate_id"],
+                "expires_at": user_data["expires_at"]
+            }
+        }
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        raise HTTPException(status_code=401, detail="Authentication failed")
+
+@api_router.get("/auth/verify")
+async def verify_certificate(current_user: dict = Depends(get_current_user)):
+    """Verify current certificate is valid"""
+    return {
+        "valid": True,
+        "user": {
+            "client_name": current_user["client_name"],
+            "client_email": current_user["client_email"],
+            "certificate_id": current_user["certificate_id"]
+        }
+    }
+
 # Dashboard
 @api_router.get("/dashboard", response_model=DashboardStats)
 async def get_dashboard_stats():
