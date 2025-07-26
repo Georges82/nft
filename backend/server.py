@@ -158,7 +158,7 @@ async def root():
 @api_router.get("/dashboard", response_model=DashboardStats)
 async def get_dashboard_stats():
     try:
-        projects = await db.projects.find().to_list(1000)
+        projects = await db.projects.find({}, {"_id": 0}).to_list(1000)
         
         total_projects = len(projects)
         active_projects = len([p for p in projects if p.get('status') in ['confirmed', 'in_progress']])
