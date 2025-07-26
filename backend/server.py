@@ -411,7 +411,7 @@ async def delete_cost_item(project_id: str, cost_id: str, current_user: dict = D
 
 # Payments
 @api_router.post("/projects/{project_id}/payments")
-async def add_payment(project_id: str, payment_data: PaymentCreate):
+async def add_payment(project_id: str, payment_data: PaymentCreate, current_user: dict = Depends(get_current_user)):
     try:
         payment_dict = payment_data.dict()
         
