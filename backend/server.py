@@ -238,7 +238,7 @@ async def verify_certificate(current_user: dict = Depends(get_current_user)):
 
 # Dashboard
 @api_router.get("/dashboard", response_model=DashboardStats)
-async def get_dashboard_stats():
+async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
     try:
         projects = await db.projects.find({}, {"_id": 0}).to_list(1000)
         
