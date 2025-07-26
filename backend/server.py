@@ -196,7 +196,14 @@ async def create_project(project_data: ProjectCreate):
     try:
         project_dict = project_data.dict()
         project = Project(**project_dict)
-        await db.projects.insert_one(project.dict())
+        
+        # Convert date objects to strings for MongoDB storage
+        project_dict_for_db = project.dict()
+        for key, value in project_dict_for_db.items():
+            if isinstance(value, date) and not isinstance(value, datetime):
+                project_dict_for_db[key] = value.isoformat()
+        
+        await db.projects.insert_one(project_dict_for_db)
         return project
     except Exception as e:
         logger.error(f"Error creating project: {e}")
