@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Build me an exe app that manage my cost and revenue for each project i work as a joiner"
+user_problem_statement: "Build me an exe app that manage my cost and revenue for each project i work as a joiner - WITH CERTIFICATE-BASED AUTHENTICATION where clients cannot register without certificates provided by admin"
 
 backend:
   - task: "Project Management API"
