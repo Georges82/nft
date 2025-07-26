@@ -394,7 +394,7 @@ async def add_cost_item(project_id: str, cost_data: CostItemCreate, current_user
         raise HTTPException(status_code=500, detail="Error adding cost item")
 
 @api_router.delete("/projects/{project_id}/costs/{cost_id}")
-async def delete_cost_item(project_id: str, cost_id: str):
+async def delete_cost_item(project_id: str, cost_id: str, current_user: dict = Depends(get_current_user)):
     try:
         result = await db.projects.update_one(
             {"id": project_id},
