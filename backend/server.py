@@ -212,7 +212,7 @@ async def create_project(project_data: ProjectCreate):
 @api_router.get("/projects", response_model=List[Dict])
 async def get_projects():
     try:
-        projects = await db.projects.find().sort("created_at", -1).to_list(1000)
+        projects = await db.projects.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
         
         # Add calculated fields
         for project in projects:
