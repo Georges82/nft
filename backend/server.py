@@ -307,7 +307,7 @@ async def get_projects(current_user: dict = Depends(get_current_user)):
         raise HTTPException(status_code=500, detail="Error fetching projects")
 
 @api_router.get("/projects/{project_id}", response_model=Dict)
-async def get_project(project_id: str):
+async def get_project(project_id: str, current_user: dict = Depends(get_current_user)):
     try:
         project = await db.projects.find_one({"id": project_id}, {"_id": 0})
         if not project:
