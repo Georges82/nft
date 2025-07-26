@@ -292,7 +292,7 @@ async def create_project(project_data: ProjectCreate, current_user: dict = Depen
         raise HTTPException(status_code=500, detail="Error creating project")
 
 @api_router.get("/projects", response_model=List[Dict])
-async def get_projects():
+async def get_projects(current_user: dict = Depends(get_current_user)):
     try:
         projects = await db.projects.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
         
