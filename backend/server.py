@@ -323,7 +323,7 @@ async def get_project(project_id: str, current_user: dict = Depends(get_current_
         raise HTTPException(status_code=500, detail="Error fetching project")
 
 @api_router.put("/projects/{project_id}", response_model=Dict)
-async def update_project(project_id: str, project_data: ProjectUpdate):
+async def update_project(project_id: str, project_data: ProjectUpdate, current_user: dict = Depends(get_current_user)):
     try:
         update_dict = {k: v for k, v in project_data.dict().items() if v is not None}
         update_dict['updated_at'] = datetime.utcnow()
